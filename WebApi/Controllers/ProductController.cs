@@ -53,8 +53,12 @@ namespace WebApi.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(int id, [FromBody] Product value)
         {
+            var command = new UpdateProductCommand(id, value);
+            var result = await _mediator.Send(command);
+
+            return result is not null ? Ok(result) : NotFound();
         }
 
         // DELETE api/<ProductController>/5
@@ -64,7 +68,7 @@ namespace WebApi.Controllers
             var command = new DeleteProductCommand(id);
             var result = await _mediator.Send(command);
 
-            return result ? NoContent() : NotFound();
+            return result ? Ok() : NotFound();
         }
     }
 }
