@@ -35,9 +35,11 @@ namespace WebApi.Controllers
 
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var query = new GetProductByIdQuery(id);
+            var result = await _mediator.Send(query);
+            return result is not null ? Ok(result) : NotFound();
         }
 
         // POST api/<ProductController>
@@ -57,8 +59,12 @@ namespace WebApi.Controllers
 
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var command = new DeleteProductCommand(id);
+            var result = await _mediator.Send(command);
+
+            return result ? NoContent() : NotFound();
         }
     }
 }
