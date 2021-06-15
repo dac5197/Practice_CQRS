@@ -3,8 +3,10 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using WebApi.Validations;
 
 namespace WebApi.PipelineBehaviors
 {
@@ -12,6 +14,7 @@ namespace WebApi.PipelineBehaviors
     // https://stackoverflow.com/questions/42283011/add-validation-to-a-mediatr-behavior-pipeline
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
+        where TResponse : List<ValidationResponse>, new()
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -30,6 +33,26 @@ namespace WebApi.PipelineBehaviors
                                 .ToList();
             if (failures.Any())
             {
+                //// Validation attempt - didn't work
+                //List<ValidationResponse> errorResponses = new();
+
+                //foreach (var failure in failures)
+                //{
+                //    ValidationResponse errorResponse = new()
+                //    {
+                //        ErrorCode = failure.ErrorCode,
+                //        ErrorStatusCode = HttpStatusCode.BadRequest,
+                //        ErrorMessage = failure.ErrorMessage,
+                //        ErrorPropertyName = failure.PropertyName
+                //    };
+
+                //    errorResponses.Add(errorResponse);
+                //}
+
+                //TResponse response = new();
+
+
+                //return (Task<TResponse>) errorResponses;
                 throw new ValidationException(failures);
             }
 
